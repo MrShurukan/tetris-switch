@@ -1,0 +1,24 @@
+{
+  "version": 4,
+  "configurations": [
+    {
+      "name": "Switch",
+      "includePath": [
+        "${workspaceFolder}/**",
+        "${env.RAYLIB_NX}/src",
+        "${env:RAYLIB_NX}/src/**",
+        "${env:DEVKITPRO}/libnx/include",
+        "${env:DEVKITPRO}/portlibs/switch/include",
+        "${env:DEVKITPRO}/devkitA64/aarch64-none-elf/include"
+      ],
+      "defines": [
+        "__SWITCH__",
+        "__NINTENDO_SWITCH__"
+      ],
+      "compilerPath": "${env:DEVKITPRO}/devkitA64/bin/aarch64-none-elf-gcc",
+      "cStandard": "c17",
+      "cppStandard": "c++17",
+      "intelliSenseMode": "gcc-arm64"
+    }
+  ]
+}
