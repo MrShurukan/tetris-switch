@@ -12,6 +12,11 @@ Game::~Game() {
 
 void Game::reset() {
     this->state = DEFAULT_STATE;
+    for (int x = 0; x < GRID_WIDTH; x++) {
+        for (int y = 0; y < GRID_HEIGHT; y++) {
+            this->grid[x][y].isFilled = false;
+        }
+    }
 }
 
 void Game::processInput() {
@@ -43,13 +48,24 @@ void Game::drawPlaying() const {
     // TODO: Maybe some fancy background?
     ClearBackground(WHITE);
 
-    // Frame
+    // Specator Frame
     DrawRectangle(SPECTATOR_FRAME_START_X, SPECTATOR_FRAME_START_Y, SPECTATOR_FRAME_SIZE, SPECTATOR_FRAME_SIZE, BLACK);
     // Spectator
     drawSquareTexture(this->svechka, (Rectangle){SPECTATOR_START_X, SPECTATOR_START_Y, SPECTATOR_SIZE, SPECTATOR_SIZE});
-
     drawTextCentered("Svechka the Honorable", SPECTATOR_FRAME_START_X + SPECTATOR_FRAME_SIZE / 2, SPECTATOR_FRAME_END_Y + 20, 24, BLACK);
 
-    // Main field
+    // Next piece Frame
+    DrawRectangle(NEXT_PIECE_FRAME_START_X, NEXT_PIECE_FRAME_START_Y, NEXT_PIECE_FRAME_SIZE, NEXT_PIECE_FRAME_SIZE, BLACK);
+    // Next piece
+    DrawRectangle(NEXT_PIECE_START_X, NEXT_PIECE_START_Y, NEXT_PIECE_SIZE, NEXT_PIECE_SIZE, WHITE);
+    drawTextCentered("Next piece", NEXT_PIECE_FRAME_START_X + NEXT_PIECE_FRAME_SIZE / 2, NEXT_PIECE_FRAME_START_Y - 20, 24, BLACK);
+
+    // Score
+    drawTextCentered("score:\n000000", NEXT_PIECE_FRAME_START_X + NEXT_PIECE_FRAME_SIZE / 2, HEIGHT - 100, 48, BLACK);
+
+    // Main field background
     DrawRectangle(MAIN_FIELD_START_X, MAIN_FIELD_START_Y, MAIN_FIELD_WIDTH, MAIN_FIELD_HEIGHT, (Color){0, 0, 0, 255});
+
+    // Grid
+
 }

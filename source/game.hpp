@@ -26,11 +26,46 @@
 #define SPECTATOR_START_X   SPECTATOR_FRAME_START_X + SPECTATOR_PADDING
 #define SPECTATOR_START_Y   SPECTATOR_FRAME_START_Y + SPECTATOR_PADDING
 
+#define NEXT_PIECE_FRAME_SIZE 200
+#define NEXT_PIECE_FRAME_START_X (MAIN_FIELD_END_X + (WIDTH - MAIN_FIELD_END_X) / 2) - NEXT_PIECE_FRAME_SIZE / 2
+#define NEXT_PIECE_FRAME_START_Y SPECTATOR_FRAME_START_Y
+#define NEXT_PIECE_FRAME_END_X   NEXT_PIECE_FRAME_START_X + NEXT_PIECE_FRAME_SIZE
+#define NEXT_PIECE_FRAME_END_Y   NEXT_PIECE_FRAME_START_Y + NEXT_PIECE_FRAME_SIZE
+
+#define NEXT_PIECE_PADDING 20
+#define NEXT_PIECE_SIZE    NEXT_PIECE_FRAME_SIZE - NEXT_PIECE_PADDING * 2
+#define NEXT_PIECE_START_X NEXT_PIECE_FRAME_START_X + NEXT_PIECE_PADDING
+#define NEXT_PIECE_START_Y NEXT_PIECE_FRAME_START_Y + NEXT_PIECE_PADDING
+
 #define DEFAULT_STATE GameState::Playing
 
 enum class GameState {
     PressStart,
     Playing,
+};
+
+enum class Food {
+    // Long piece
+    Kolbasa,
+    // Reversed L
+    Fish,
+    // L
+    Sausages,
+    // Box
+    Shrimp,
+    // Pipe _--
+    Cheese,
+    // T
+    Ryazhenka,
+    // Pipe --_
+    Steak,
+    // Single Cell
+    DryFood
+};
+
+struct Cell {
+    bool isFilled;
+    Food food;
 };
 
 class Game {
@@ -45,6 +80,7 @@ public:
 
 private:
     GameState state;
+    Cell grid[GRID_WIDTH][GRID_HEIGHT];
     Texture2D svechka;
 
     void drawPressStart() const;
