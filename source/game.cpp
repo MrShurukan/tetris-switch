@@ -29,7 +29,7 @@ void Game::reset() {
 }
 
 void Game::processInput() {
-    if (IsGamepadButtonPressed(0, GAMEPAD_BUTTON_RIGHT_FACE_RIGHT)) {
+    if (IsGamepadButtonPressed(0, GAMEPAD_BUTTON_RIGHT_FACE_RIGHT) || IsGamepadButtonPressed(0, GAMEPAD_BUTTON_RIGHT_FACE_DOWN)) {
         this->currentPiece.tryRotateClockwise(this->grid);
     }
 
