@@ -31,3 +31,16 @@ void Timer::reset(float timeSeconds) {
     this->timeSeconds = timeSeconds;
     this->reset();
 }
+
+void Timer::trigger() {
+    this->timeLeft = 0.0f;
+}
+
+void Timer::triggerAndReset(float timeSeconds) {
+    this->reset(timeSeconds);
+    this->trigger();
+};
+
+float Timer::getTimeLeft() const {
+    return this->timeLeft;
+}

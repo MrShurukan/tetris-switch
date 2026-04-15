@@ -18,7 +18,6 @@ bool TetraminoTemplate::hasBoxAt(int x, int y) const {
     assert(x >= 0 && x < this->width);
     assert(y >= 0 && y < this->height);
 
-    // Has to be reversed due to the way boxes are initialized in the code
     return boxes.at(x + y * this->width);
 }
 
@@ -64,7 +63,7 @@ const TetraminoTemplate& getTemplateByFood(Food food) {
                 true, false,
                 true, true
             }, 
-            GenericVector<int>(1, 1)
+            GenericVector<int>(0, 1)
         ),
         // Box
         TetraminoTemplate(2, 2, Food::Shrimp, 

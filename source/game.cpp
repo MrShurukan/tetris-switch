@@ -4,7 +4,7 @@ static inline Food getRandomFood() {
     return static_cast<Food>(GetRandomValue(0, static_cast<int>(Food::_COUNT) - 1));
 }
 
-Game::Game() : currentPiece(getRandomFood(), 0, 0) {
+Game::Game() : currentPiece(getRandomFood()), pieceFallTimer(PIECE_FALL_TIMER_DEFAULT) {
     this->svechka = LoadTexture("romfs:/resources/svechka.png");
 
     this->reset();
@@ -22,16 +22,84 @@ void Game::reset() {
         }
     }
 
+    this->score = 0;
     this->nextPieceFood = getRandomFood();
-    this->currentPiece = Tetramino(getRandomFood(), GRID_WIDTH / 2, 0);
+    this->currentPiece = Tetramino(getRandomFood());
+    this->pieceFallTimer.reset(PIECE_FALL_TIMER_DEFAULT);
 }
 
 void Game::processInput() {
+    if (IsGamepadButtonPressed(0, GAMEPAD_BUTTON_RIGHT_FACE_RIGHT)) {
+        this->currentPiece.tryRotateClockwise(this->grid);
+    }
 
+    if (IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_FACE_LEFT)) {
+        this->currentPiece.tryMoveX(-1, this->grid);
+    }
+    else if (IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_FACE_RIGHT)) {
+        this->currentPiece.tryMoveX(1, this->grid);
+    }
+    
+    if (IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_FACE_DOWN)) {
+        this->pieceFallTimer.triggerAndReset(PIECE_FALL_TIMER_FAST);
+    }
+    else if (IsGamepadButtonReleased(0, GAMEPAD_BUTTON_LEFT_FACE_DOWN)) {
+        this->pieceFallTimer.triggerAndReset(PIECE_FALL_TIMER_DEFAULT);
+    }
 }
 
 void Game::update(float deltaTime) {
+    if (!this->pieceFallTimer.process(deltaTime)) return;
 
+    // Check if piece landed, otherwise just move it down
+    if (!this->currentPiece.tryMoveDown(this->grid)) {
+        // Place it permanentely in the grid
+        this->currentPiece.placeInGrid(this->grid);
+
+        // Check if line(-s) were cleared
+        std::array<bool, GRID_HEIGHT> lineCleared;
+
+        int totalCleared = 0;
+
+        for (int y = 0; y < GRID_HEIGHT; y++) {
+            lineCleared[y] = true;
+            for (int x = 0; x < GRID_WIDTH; x++) {
+                if (this->grid[x][y].isFilled) continue;
+
+                lineCleared[y] = false;
+                break;
+            }
+        }
+        
+        // Clear lines
+        for (int y = GRID_HEIGHT - 1; y >= 0; y--) {
+            if (!lineCleared[y]) continue;
+            totalCleared++;
+
+            for (int x = 0; x < GRID_WIDTH; x++) {
+                for (int yPrime = y-1; yPrime >= 0; yPrime--) {
+                    this->grid[x][yPrime+1] = this->grid[x][yPrime];
+                }
+            }
+        }
+
+        // Calculate new score
+        this->score += (totalCleared == 4) ? 10000 : totalCleared * 1000; 
+
+        // Create a new current piece from next one
+        Tetramino newTetramino = Tetramino(this->nextPieceFood);
+        // Check if new piece doesn't intersect anything
+        if (newTetramino.intersectsGrid(this->grid)) {
+            // Game Over
+            this->reset();
+            return;
+        }
+
+        this->currentPiece = newTetramino;
+
+        // Generate a new next piece
+        this->nextPieceFood = getRandomFood();
+    }
 }
 
 void Game::draw() const {
@@ -125,7 +193,9 @@ void Game::drawPlaying() const {
     drawTextCentered("Next piece", NEXT_PIECE_FRAME_START_X + NEXT_PIECE_FRAME_SIZE / 2, NEXT_PIECE_FRAME_START_Y - 20, 24, BLACK);
 
     // Score
-    drawTextCentered("score:\n000000", NEXT_PIECE_FRAME_START_X + NEXT_PIECE_FRAME_SIZE / 2, HEIGHT - 100, 48, BLACK);
+    std::stringstream score;
+    score << "score:\n" << std::setw(6) << std::setfill('0') << this->score;
+    drawTextCentered(score.str(), NEXT_PIECE_FRAME_START_X + NEXT_PIECE_FRAME_SIZE / 2, HEIGHT - 100, 48, BLACK);
 
     // Main field background
     DrawRectangle(MAIN_FIELD_START_X, MAIN_FIELD_START_Y, MAIN_FIELD_WIDTH, MAIN_FIELD_HEIGHT, (Color){0, 0, 0, 255});
@@ -141,4 +211,9 @@ void Game::drawPlaying() const {
 
     // Active piece
     this->currentPiece.draw();
+
+    // DEBUG
+    // std::stringstream stream;
+    // stream << "Timer: " << std::fixed << std::setprecision(3) << this->pieceFallTimer.getTimeLeft();
+    // DrawText(stream.str().c_str(), 10, HEIGHT - 50, 24, BLACK);
 }

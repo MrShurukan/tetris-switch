@@ -13,6 +13,12 @@ public:
     void reset();
     // Resets timer and sets new timeSeconds for the next run
     void reset(float timeSeconds);
+    // Next time process will be called will cause timer to trigger as if it reached 0. Doesn't call process itself.
+    void trigger();
+    // Triggers the timer, then resets to a new timeSeconds. See trigger() comment.
+    void triggerAndReset(float timeSeconds);
+    // Gets how much time left in seconds
+    float getTimeLeft() const;
 private:
     // How often should it fire
     float timeSeconds;

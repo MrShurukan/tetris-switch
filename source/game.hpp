@@ -3,6 +3,8 @@
 #include "shurulib/shurulib.h"
 #include <cassert>
 #include <map>
+#include <sstream>
+#include <iomanip>
 
 #define WIDTH 1280
 #define HEIGHT 720
@@ -40,6 +42,9 @@
 #define NEXT_PIECE_START_Y NEXT_PIECE_FRAME_START_Y + NEXT_PIECE_PADDING
 
 #define DEFAULT_STATE GameState::Playing
+
+#define PIECE_FALL_TIMER_DEFAULT 0.7f
+#define PIECE_FALL_TIMER_FAST 0.15f
 
 enum class GameState {
     PressStart,
@@ -110,18 +115,39 @@ const TetraminoTemplate& getTemplateByFood(Food food);
 Color getBaseColorByFood(Food food);
 void drawCell(int x, int y, Food food);
 
+// Tetramino box
+struct Box {
+    Box(int x, int y, bool isPivot) : coords(GenericVector<int>(x, y)), isPivot(isPivot) {}
+    GenericVector<int> coords;
+    // Is origin of rotation for the piece
+    bool isPivot;
+};
+
 class Tetramino {
 public:
-    // Create a Tetramino with a specified food type + where should be the furthest block on the left as well as 
-    // the furthest block on the top
-    Tetramino(Food food, int leftX, int topY);
+    // Create a Tetramino with a specified food type. Appears at coords GRID_WIDTH / 2, 0
+    Tetramino(Food food);
     // Draw the tetramino on the base field
     void draw() const;
+    // Check if tetramino intersects anything in the grid
+    bool intersectsGrid(const Cell grid[GRID_WIDTH][GRID_HEIGHT]) const;
+
+    // Transfer current boxes to grid
+    void placeInGrid(Cell grid[GRID_WIDTH][GRID_HEIGHT]) const;
+
+    // Try move down; if intersects grid then movement is cancelled and false is returned
+    bool tryMoveDown(const Cell grid[GRID_WIDTH][GRID_HEIGHT]);
+
+    // Try move horizontally; if intersects grid then movement is cancelled and false is returned
+    bool tryMoveX(int dx, const Cell grid[GRID_WIDTH][GRID_HEIGHT]);
+
+    // Try rotating clockwise; if intersects grid then rotatio nis cancelled and false is returned
+    bool tryRotateClockwise(const Cell grid[GRID_WIDTH][GRID_HEIGHT]);
 private:
     // A lookup key for the template
     Food food;
     // A list of actual boxes and their coordinates
-    std::vector<GenericVector<int>> boxes;
+    std::vector<Box> boxes;
 };
 
 class Game {
@@ -141,6 +167,8 @@ private:
     // A lookup key for the next food
     Food nextPieceFood;
     Tetramino currentPiece;
+    Timer pieceFallTimer;
+    int score;
 
     void drawPressStart() const;
     void drawPlaying() const;

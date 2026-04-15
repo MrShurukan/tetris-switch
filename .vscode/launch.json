@@ -16,7 +16,13 @@
 
             "setupCommands": [
                 { "text": "set pagination off" },
-                { "text": "set breakpoint pending on" }
+                { "text": "set breakpoint pending on" },
+                { "text": "handle SIGSEGV stop print nopass" },
+                { "text": "handle SIGABRT stop print nopass" },
+                { "text": "handle SIGILL stop print nopass" },
+                { "text": "handle SIGBUS stop print nopass" },
+                { "text": "catch throw" },
+                { "text": "catch catch" }
             ],
 
             // "logging": {
