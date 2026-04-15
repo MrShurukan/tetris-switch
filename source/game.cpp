@@ -1,6 +1,10 @@
 #include "game.hpp"
 
-Game::Game() {
+static inline Food getRandomFood() {
+    return static_cast<Food>(GetRandomValue(0, static_cast<int>(Food::_COUNT) - 1));
+}
+
+Game::Game() : currentPiece(getRandomFood(), 0, 0) {
     this->svechka = LoadTexture("romfs:/resources/svechka.png");
 
     this->reset();
@@ -18,15 +22,8 @@ void Game::reset() {
         }
     }
 
-    this->nextPieceFood = static_cast<Food>(GetRandomValue(0, static_cast<int>(Food::_COUNT) - 1));
-
-    // Debug
-    for (int x = 0; x < GRID_WIDTH; x++) {
-        for (int y = 0; y < GRID_HEIGHT; y++) {
-            this->grid[x][y].isFilled = true;
-            this->grid[x][y].food = static_cast<Food>(GetRandomValue(0, 7));
-        }
-    }
+    this->nextPieceFood = getRandomFood();
+    this->currentPiece = Tetramino(getRandomFood(), GRID_WIDTH / 2, 0);
 }
 
 void Game::processInput() {
@@ -94,6 +91,17 @@ static std::string getLabelByFood(Food food) {
     return labelByFood[static_cast<size_t>(food)];
 }
 
+void drawCell(int x, int y, Food food) {
+    Color c = getBaseColorByFood(food);
+    DrawRectangle(MAIN_FIELD_START_X + x * CELL_SIZE, MAIN_FIELD_START_Y + y * CELL_SIZE, CELL_SIZE, CELL_SIZE, c);
+
+    // Make it darker
+    c.r *= 0.8;
+    c.g *= 0.8;
+    c.b *= 0.8;
+    drawTextCentered(getLabelByFood(food), MAIN_FIELD_START_X + x * CELL_SIZE + CELL_SIZE / 2, MAIN_FIELD_START_Y + y * CELL_SIZE + CELL_SIZE / 2, 24, c);
+}
+
 // Left up is svechka's box
 // Left down is debug info
 // Right top is next block
@@ -127,14 +135,10 @@ void Game::drawPlaying() const {
         for (int y = 0; y < GRID_HEIGHT; y++) {
             if (!grid[x][y].isFilled) continue;
 
-            Color c = getBaseColorByFood(grid[x][y].food);
-            DrawRectangle(MAIN_FIELD_START_X + x * CELL_SIZE, MAIN_FIELD_START_Y + y * CELL_SIZE, CELL_SIZE, CELL_SIZE, c);
-
-            // Make it darker
-            c.r *= 0.8;
-            c.g *= 0.8;
-            c.b *= 0.8;
-            drawTextCentered(getLabelByFood(grid[x][y].food), MAIN_FIELD_START_X + x * CELL_SIZE + CELL_SIZE / 2, MAIN_FIELD_START_Y + y * CELL_SIZE + CELL_SIZE / 2, 24, c);
+            drawCell(x, y, grid[x][y].food);
         }
     }
+
+    // Active piece
+    this->currentPiece.draw();
 }
