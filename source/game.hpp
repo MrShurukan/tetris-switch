@@ -68,6 +68,19 @@ struct Cell {
     Food food;
 };
 
+class Tetramino {
+public:
+    Tetramino();
+
+    // Bounding box width and height in cells
+    const int width;
+    const int height;
+    // Which type this tetramino is (defines the texture)
+    const Food type;
+    // Grid of exactly width*height with tetraminoBoxes in it
+    const std::vector<const std::vector<bool>> boxes;
+};
+
 class Game {
 public:
     Game();
