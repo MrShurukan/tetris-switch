@@ -1,6 +1,8 @@
 #pragma once
 #include "raylib.h"
 #include "shurulib/shurulib.h"
+#include <cassert>
+#include <map>
 
 #define WIDTH 1280
 #define HEIGHT 720
@@ -60,25 +62,15 @@ enum class Food {
     // Pipe --_
     Steak,
     // Single Cell
-    DryFood
+    DryFood,
+
+    // HELPER
+    _COUNT
 };
 
 struct Cell {
     bool isFilled;
     Food food;
-};
-
-class Tetramino {
-public:
-    Tetramino();
-
-    // Bounding box width and height in cells
-    const int width;
-    const int height;
-    // Which type this tetramino is (defines the texture)
-    const Food type;
-    // Grid of exactly width*height with tetraminoBoxes in it
-    const std::vector<const std::vector<bool>> boxes;
 };
 
 class Game {
@@ -99,3 +91,32 @@ private:
     void drawPressStart() const;
     void drawPlaying() const;
 };
+
+// Important! Do not make bounding boxes larger than this (or in any other way it will cause the number of items be larger)
+#define MAX_TETRAMINO_BOXES 5 * 5
+
+class TetraminoTemplate {
+public:
+    // For rotating tetraminos (shouldRotate = true)
+    TetraminoTemplate(int width, int height, Food type, std::array<bool, MAX_TETRAMINO_BOXES> boxes, GenericVector<int> pivotCoords);
+    // For non-rotation tetraminos (shouldRotate = false)
+    TetraminoTemplate(int width, int height, Food type, std::array<bool, MAX_TETRAMINO_BOXES> boxes);
+
+    // Bounding box width and height in cells
+    const int width;
+    const int height;
+    // Which type this tetramino is (defines the texture)
+    const Food type;
+    // A marker for which piece is the pivot (origin) around which piece will be rotated
+    const GenericVector<int> pivotCoords;
+    // If rotation is allowed
+    const bool shouldRotate;
+private:
+    // Full constructor
+    TetraminoTemplate(int width, int height, Food type, std::array<bool, MAX_TETRAMINO_BOXES> boxes, GenericVector<int> pivotCoords, bool shouldRotate);
+    
+    // Grid of exactly width*height with tetraminoBoxes in it. True if there is a box, false if not.
+    const std::array<bool, MAX_TETRAMINO_BOXES> boxes;
+};
+
+const std::map<Food, TetraminoTemplate>& getTetraminos();

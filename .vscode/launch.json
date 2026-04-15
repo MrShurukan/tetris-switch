@@ -1,0 +1,29 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Attach to Eden GDB Stub",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/${workspaceFolderBasename}.elf",
+            "cwd": "${workspaceFolder}",
+            "MIMode": "gdb",
+            "miDebuggerPath": "/opt/devkitpro/devkitA64/bin/aarch64-none-elf-gdb",
+            "miDebuggerServerAddress": "10.20.36.209:6543",
+
+            "stopAtConnect": true,
+            "launchCompleteCommand": "None",
+
+            "setupCommands": [
+                { "text": "set pagination off" },
+                { "text": "set breakpoint pending on" }
+            ],
+
+            // "logging": {
+            //     "engineLogging": true,
+            //     "trace": true,
+            //     "traceResponse": true
+            // }
+        }
+    ]
+}
