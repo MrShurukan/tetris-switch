@@ -73,6 +73,54 @@ struct Cell {
     Food food;
 };
 
+// Important! Do not make bounding boxes larger than this (or in any other way it will cause the number of items to be larger)
+#define MAX_TETRAMINO_BOXES 5 * 5
+
+class TetraminoTemplate {
+public:
+    // For rotating tetraminos (shouldRotate = true)
+    TetraminoTemplate(int width, int height, Food type, std::array<bool, MAX_TETRAMINO_BOXES> boxes, GenericVector<int> pivotCoords);
+    // For non-rotation tetraminos (shouldRotate = false)
+    TetraminoTemplate(int width, int height, Food type, std::array<bool, MAX_TETRAMINO_BOXES> boxes);
+
+    // Access to the boxes in a convenient way
+    bool hasBoxAt(int x, int y) const;
+
+    // Draw a miniature tetramino at the specified location. It would be drawn in a bounded square.
+    void drawMiniature(int startX, int startY, int size) const;
+
+    // Bounding box width and height in cells
+    const int width;
+    const int height;
+    // Which type this tetramino is (defines the texture)
+    const Food type;
+    // A marker for which piece is the pivot (origin) around which piece will be rotated
+    const GenericVector<int> pivotCoords;
+    // If rotation is allowed
+    const bool shouldRotate;
+private:
+    // Full constructor
+    TetraminoTemplate(int width, int height, Food type, std::array<bool, MAX_TETRAMINO_BOXES> boxes, GenericVector<int> pivotCoords, bool shouldRotate);
+
+    // Grid of exactly width*height with tetraminoBoxes in it. True if there is a box, false if not.
+    const std::array<bool, MAX_TETRAMINO_BOXES> boxes;
+};
+
+const TetraminoTemplate& getTemplateByFood(Food food);
+Color getBaseColorByFood(Food food);
+
+class Tetramino {
+public:
+    Tetramino(TetraminoTemplate& tetraminoTemplate);
+    // Draw the tetramino on the base field
+    void draw();
+private:
+    // A reference to template from which it was built
+    const TetraminoTemplate& tetraminoTemplate;
+    // A list of actual boxes and their coordinates
+    std::vector<GenericVector<int>> boxes;
+};
+
 class Game {
 public:
     Game();
@@ -87,36 +135,9 @@ private:
     GameState state;
     Cell grid[GRID_WIDTH][GRID_HEIGHT];
     Texture2D svechka;
+    // A lookup key for the next food
+    Food nextPieceFood; 
 
     void drawPressStart() const;
     void drawPlaying() const;
 };
-
-// Important! Do not make bounding boxes larger than this (or in any other way it will cause the number of items be larger)
-#define MAX_TETRAMINO_BOXES 5 * 5
-
-class TetraminoTemplate {
-public:
-    // For rotating tetraminos (shouldRotate = true)
-    TetraminoTemplate(int width, int height, Food type, std::array<bool, MAX_TETRAMINO_BOXES> boxes, GenericVector<int> pivotCoords);
-    // For non-rotation tetraminos (shouldRotate = false)
-    TetraminoTemplate(int width, int height, Food type, std::array<bool, MAX_TETRAMINO_BOXES> boxes);
-
-    // Bounding box width and height in cells
-    const int width;
-    const int height;
-    // Which type this tetramino is (defines the texture)
-    const Food type;
-    // A marker for which piece is the pivot (origin) around which piece will be rotated
-    const GenericVector<int> pivotCoords;
-    // If rotation is allowed
-    const bool shouldRotate;
-private:
-    // Full constructor
-    TetraminoTemplate(int width, int height, Food type, std::array<bool, MAX_TETRAMINO_BOXES> boxes, GenericVector<int> pivotCoords, bool shouldRotate);
-    
-    // Grid of exactly width*height with tetraminoBoxes in it. True if there is a box, false if not.
-    const std::array<bool, MAX_TETRAMINO_BOXES> boxes;
-};
-
-const std::map<Food, TetraminoTemplate>& getTetraminos();

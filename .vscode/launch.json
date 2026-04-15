@@ -8,8 +8,8 @@
             "program": "${workspaceFolder}/${workspaceFolderBasename}.elf",
             "cwd": "${workspaceFolder}",
             "MIMode": "gdb",
-            "miDebuggerPath": "/opt/devkitpro/devkitA64/bin/aarch64-none-elf-gdb",
-            "miDebuggerServerAddress": "10.20.36.209:6543",
+            "miDebuggerPath": "${env:DEVKITPRO}/devkitA64/bin/aarch64-none-elf-gdb",
+            "miDebuggerServerAddress": "192.168.0.236:6543",
 
             "stopAtConnect": true,
             "launchCompleteCommand": "None",

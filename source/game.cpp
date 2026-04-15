@@ -18,6 +18,8 @@ void Game::reset() {
         }
     }
 
+    this->nextPieceFood = static_cast<Food>(GetRandomValue(0, static_cast<int>(Food::_COUNT) - 1));
+
     // Debug
     for (int x = 0; x < GRID_WIDTH; x++) {
         for (int y = 0; y < GRID_HEIGHT; y++) {
@@ -46,34 +48,51 @@ void Game::draw() const {
     }
 }
 
-static std::map<Food, Color> baseColorByFood = {
-    {Food::Kolbasa,     (Color){204, 136, 153, 255}},
-    // Reversed L
-    {Food::Fish,        (Color){153, 153, 255, 255}},
-    // L
-    {Food::Sausages,    (Color){234, 170, 166, 255}},
-    // Box
-    {Food::Shrimp,      (Color){253, 195, 158, 255}},
-    // Pipe _--
-    {Food::Cheese,      (Color){246, 217, 142, 255}},
-    // T
-    {Food::Ryazhenka,   (Color){251, 249, 244, 255}},
-    // Pipe --_
-    {Food::Steak,       (Color){255, 168, 175, 255}},
-    // Single Cell
-    {Food::DryFood,     (Color){209, 146, 97, 255}},
-};
+Color getBaseColorByFood(Food food) {
+    static std::array<Color, static_cast<size_t>(Food::_COUNT)> baseColorByFood = {
+        // Kolbasa
+        (Color){204, 136, 153, 255},
+        // Fish
+        (Color){153, 153, 255, 255},
+        // Sausages
+        (Color){234, 170, 166, 255},
+        // Shrimp
+        (Color){253, 195, 158, 255},
+        // Cheese
+        (Color){246, 217, 142, 255},
+        // Ryazhenka
+        (Color){251, 249, 244, 255},
+        // Steak
+        (Color){255, 168, 175, 255},
+        // DryFood
+        (Color){209, 146, 97, 255},
+    };
 
-static std::map<Food, std::string> labelByFood = {
-    {Food::Kolbasa,     "K"},
-    {Food::Fish,        "F"},
-    {Food::Sausages,    "Sa"},
-    {Food::Shrimp,      "Sh"},
-    {Food::Cheese,      "Ch"},
-    {Food::Ryazhenka,   "R"},
-    {Food::Steak,       "St"},
-    {Food::DryFood,     "DF"},
-};
+    return baseColorByFood[static_cast<size_t>(food)];
+}
+
+static std::string getLabelByFood(Food food) {
+    static std::array<std::string, static_cast<size_t>(Food::_COUNT)> labelByFood = {
+        // Kolbasa,
+        "K",   
+        // Fish,
+        "F",      
+        // Sausages,
+        "Sa",   
+        // Shrimp,
+        "Sh",     
+        // Cheese,
+        "Ch",     
+        // Ryazhenka,
+        "R", 
+        // Steak,
+        "St",      
+        // DryFood,
+        "DF",    
+    };
+
+    return labelByFood[static_cast<size_t>(food)];
+}
 
 // Left up is svechka's box
 // Left down is debug info
@@ -94,6 +113,7 @@ void Game::drawPlaying() const {
     DrawRectangle(NEXT_PIECE_FRAME_START_X, NEXT_PIECE_FRAME_START_Y, NEXT_PIECE_FRAME_SIZE, NEXT_PIECE_FRAME_SIZE, BLACK);
     // Next piece
     DrawRectangle(NEXT_PIECE_START_X, NEXT_PIECE_START_Y, NEXT_PIECE_SIZE, NEXT_PIECE_SIZE, WHITE);
+    getTemplateByFood(this->nextPieceFood).drawMiniature(NEXT_PIECE_START_X + 10, NEXT_PIECE_START_Y + 10, NEXT_PIECE_SIZE - 10 * 2);
     drawTextCentered("Next piece", NEXT_PIECE_FRAME_START_X + NEXT_PIECE_FRAME_SIZE / 2, NEXT_PIECE_FRAME_START_Y - 20, 24, BLACK);
 
     // Score
@@ -107,14 +127,14 @@ void Game::drawPlaying() const {
         for (int y = 0; y < GRID_HEIGHT; y++) {
             if (!grid[x][y].isFilled) continue;
 
-            Color c = baseColorByFood[grid[x][y].food];
+            Color c = getBaseColorByFood(grid[x][y].food);
             DrawRectangle(MAIN_FIELD_START_X + x * CELL_SIZE, MAIN_FIELD_START_Y + y * CELL_SIZE, CELL_SIZE, CELL_SIZE, c);
 
             // Make it darker
             c.r *= 0.8;
             c.g *= 0.8;
             c.b *= 0.8;
-            drawTextCentered(labelByFood[grid[x][y].food], MAIN_FIELD_START_X + x * CELL_SIZE + CELL_SIZE / 2, MAIN_FIELD_START_Y + y * CELL_SIZE + CELL_SIZE / 2, 24, c);
+            drawTextCentered(getLabelByFood(grid[x][y].food), MAIN_FIELD_START_X + x * CELL_SIZE + CELL_SIZE / 2, MAIN_FIELD_START_Y + y * CELL_SIZE + CELL_SIZE / 2, 24, c);
         }
     }
 }
