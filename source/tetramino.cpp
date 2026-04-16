@@ -1,4 +1,5 @@
 #include "game.hpp"
+#include "tetramino_template.hpp"
 
 Tetramino::Tetramino(Food food) : food(food) {
     const TetraminoTemplate& templ = getTemplateByFood(food);

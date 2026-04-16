@@ -1,4 +1,4 @@
-#include "game.hpp"
+#include "tetramino_template.hpp"
 
 TetraminoTemplate::TetraminoTemplate(int width, int height, Food type, std::array<bool, MAX_TETRAMINO_BOXES> boxes)
     : TetraminoTemplate(width, height, type, boxes, GenericVector<int>(0, 0), false) {}
