@@ -99,7 +99,19 @@ void Game::drawPlaying() const {
     // Main field background
     DrawRectangle(MAIN_FIELD_START_X, MAIN_FIELD_START_Y, MAIN_FIELD_WIDTH, MAIN_FIELD_HEIGHT, (Color){0, 0, 0, 255});
 
-    // Grid
+    // Grid guideline
+    for (int x = 0; x < GRID_WIDTH; x++) {
+        // Vertical grid guideline
+        int xGuideline = MAIN_FIELD_START_X + x * CELL_SIZE;
+        DrawLine(xGuideline, MAIN_FIELD_START_Y, xGuideline, MAIN_FIELD_END_Y, GRAY);
+    }
+    for (int y = 0; y < GRID_HEIGHT; y++) {
+        // Horizontal grid guideline
+        int yGuideline = MAIN_FIELD_START_Y + y * CELL_SIZE;
+        DrawLine(MAIN_FIELD_START_X, yGuideline, MAIN_FIELD_END_X, yGuideline, GRAY);
+    }
+
+    // Grid fill
     for (int x = 0; x < GRID_WIDTH; x++) {
         for (int y = 0; y < GRID_HEIGHT; y++) {
             if (!grid[x][y].isFilled) continue;
