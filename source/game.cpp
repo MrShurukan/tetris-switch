@@ -23,6 +23,7 @@ void Game::reset() {
     }
 
     this->score = 0;
+    this->flyingBoxes.clear(); this->nextFlyingBoxCoords = 0;
     this->nextPieceFood = getRandomFood();
     this->currentPiece = Tetramino(getRandomFood());
     this->pieceFallTimer.reset(PIECE_FALL_TIMER_DEFAULT);
@@ -49,6 +50,19 @@ void Game::processInput() {
 }
 
 void Game::update(float deltaTime) {
+    switch (this->state) {
+        case GameState::PressStart:
+            break;
+        case GameState::Playing:
+            this->updatePlaying(deltaTime);
+            break;
+        case GameState::Ending:
+            this->updateEnding(deltaTime);
+            break;
+    }
+}
+
+void Game::updatePlaying(float deltaTime) {
     if (!this->pieceFallTimer.process(deltaTime)) return;
 
     // Check if piece landed, otherwise just move it down
@@ -84,14 +98,14 @@ void Game::update(float deltaTime) {
         }
 
         // Calculate new score
-        this->score += (totalCleared == 4) ? 10000 : totalCleared * 1000; 
+        this->score += (totalCleared == 4) ? 5000 : totalCleared * 500; 
 
         // Create a new current piece from next one
         Tetramino newTetramino = Tetramino(this->nextPieceFood);
         // Check if new piece doesn't intersect anything
         if (newTetramino.intersectsGrid(this->grid)) {
             // Game Over
-            this->reset();
+            this->state = GameState::Ending;
             return;
         }
 
@@ -100,4 +114,50 @@ void Game::update(float deltaTime) {
         // Generate a new next piece
         this->nextPieceFood = getRandomFood();
     }
+}
+
+void Game::updateEnding(float deltaTime) {
+    for (auto box = this->flyingBoxes.begin(); box != this->flyingBoxes.end();) {
+        box->update(deltaTime);
+        box->draw();
+
+        // Destroy the box if it's out of bounds
+        if (box->coords.y >= GRID_HEIGHT + CELL_SIZE * 2) {
+            this->flyingBoxes.erase(box);
+        }
+        else {
+            box++;
+        }
+    }
+
+    // Repurpose the timer for falling pieces for starting explosions
+    if (!this->pieceFallTimer.process(deltaTime)) return;
+
+    for (int i = this->nextFlyingBoxCoords; i < GRID_WIDTH * GRID_HEIGHT; i++) {
+        int x = i % GRID_WIDTH;
+        int y = i / GRID_WIDTH;
+
+        Cell& cell = this->grid[x][y];
+        if (!cell.isFilled) continue;
+
+        // Random speed and rotation
+        float rotationSpeed = GetRandomValue(20, 80) / 100.0f;
+        Vector2 speed = (Vector2){GetRandomValue(-5, 5), GetRandomValue(10, 50)};
+
+        this->flyingBoxes.push_back(FlyingBox(cell.food, x, y, speed, rotationSpeed));
+        cell.isFilled = false;
+
+        this->nextFlyingBoxCoords = i + 1;
+        break;
+    }
+
+    // If none boxes were added - we are out of cells to explode.
+    if (this->flyingBoxes.size() == 0) {
+        // Game Over
+        this->reset();
+        return;
+    }
+
+    // Randomize next time this happens
+    this->pieceFallTimer.reset(1.0f / GetRandomValue(3, 5));
 }

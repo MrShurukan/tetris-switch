@@ -9,6 +9,10 @@ void Game::draw() const {
         case GameState::Playing:
             this->drawPlaying();
             break;
+
+        case GameState::Ending:
+            this->drawEnding();
+            break;
     }
 }
 
@@ -74,7 +78,7 @@ void drawCell(int x, int y, Food food) {
 // Right top is next block
 // Right bottom is score
 // Middle is tetris game screen
-void Game::drawPlaying() const {
+void Game::drawCommon() const {
     // TODO: Maybe some fancy background?
     ClearBackground(WHITE);
 
@@ -119,6 +123,10 @@ void Game::drawPlaying() const {
             drawCell(x, y, grid[x][y].food);
         }
     }
+}
+
+void Game::drawPlaying() const {
+    this->drawCommon();
 
     // Active piece
     this->currentPiece.draw();
@@ -127,4 +135,8 @@ void Game::drawPlaying() const {
     // std::stringstream stream;
     // stream << "Timer: " << std::fixed << std::setprecision(3) << this->pieceFallTimer.getTimeLeft();
     // DrawText(stream.str().c_str(), 10, HEIGHT - 50, 24, BLACK);
+}
+
+void Game::drawEnding() const {
+    this->drawCommon();
 }
