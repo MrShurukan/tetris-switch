@@ -88,17 +88,21 @@ struct Box {
     bool isPivot;
 };
 
+Color getBaseColorByFood(Food food);
+
+
+const Vector2 gravity {0.0f, 300.0f};
+
 // Flying tetramino box (game end)
 struct FlyingBox {
     FlyingBox() {}
     FlyingBox(Food food, int x, int y, Vector2 initialSpeed, float rotationSpeed) 
-        : food(food), coords(Vector2{(float)x, (float)coords.y}), rotationSpeed(rotationSpeed) {}
+        : food(food), coords(Vector2{(float)x, (float)y}), speed(initialSpeed), rotation(0.0f), rotationSpeed(rotationSpeed) {}
 
     Food food;
 
     Vector2 coords;
     Vector2 speed;
-    const Vector2 gravity {0.0f, -20.0f};
 
     float rotation;
     float rotationSpeed;
@@ -107,13 +111,14 @@ struct FlyingBox {
         this->coords.x += this->speed.x * deltaTime;
         this->coords.y += this->speed.y * deltaTime;
 
-        this->speed.x += this->gravity.x;
-        this->speed.y += this->gravity.y;
+        this->speed.x += gravity.x * deltaTime;
+        this->speed.y += gravity.y * deltaTime;
 
         this->rotation += this->rotationSpeed * deltaTime;
     }
 
-    void draw() {
-        drawSquareRotation((Rectangle){this->coords.x, this->coords.y, CELL_SIZE, CELL_SIZE}, this->rotation, this->color);
+    void draw() const {
+        drawSquareRotation((Rectangle){this->coords.x, this->coords.y, CELL_SIZE, CELL_SIZE}, this->rotation, getBaseColorByFood(this->food));
+        // DrawRectangle(this->coords.x, this->coords.y, CELL_SIZE, CELL_SIZE, getBaseColorByFood(this->food));
     }
 };

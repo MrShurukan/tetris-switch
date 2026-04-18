@@ -70,31 +70,33 @@ void Game::updatePlaying(float deltaTime) {
         // Place it permanentely in the grid
         this->currentPiece.placeInGrid(this->grid);
 
-        // Check if line(-s) were cleared
-        std::array<bool, GRID_HEIGHT> lineCleared;
-
         int totalCleared = 0;
 
-        for (int y = 0; y < GRID_HEIGHT; y++) {
-            lineCleared[y] = true;
-            for (int x = 0; x < GRID_WIDTH; x++) {
-                if (this->grid[x][y].isFilled) continue;
-
-                lineCleared[y] = false;
-                break;
-            }
-        }
-        
-        // Clear lines
         for (int y = GRID_HEIGHT - 1; y >= 0; y--) {
-            if (!lineCleared[y]) continue;
-            totalCleared++;
-
+            bool full = true;
             for (int x = 0; x < GRID_WIDTH; x++) {
-                for (int yPrime = y-1; yPrime >= 0; yPrime--) {
-                    this->grid[x][yPrime+1] = this->grid[x][yPrime];
+                if (!this->grid[x][y].isFilled) {
+                    full = false;
+                    break;
                 }
             }
+
+            if (!full) continue;
+
+            totalCleared++;
+
+            for (int yy = y; yy > 0; yy--) {
+                for (int x = 0; x < GRID_WIDTH; x++) {
+                    this->grid[x][yy] = this->grid[x][yy - 1];
+                }
+            }
+
+            for (int x = 0; x < GRID_WIDTH; x++) {
+                this->grid[x][0].isFilled = false;
+            }
+
+            // Check same row again after collapse
+            y++;
         }
 
         // Calculate new score
@@ -119,10 +121,9 @@ void Game::updatePlaying(float deltaTime) {
 void Game::updateEnding(float deltaTime) {
     for (auto box = this->flyingBoxes.begin(); box != this->flyingBoxes.end();) {
         box->update(deltaTime);
-        box->draw();
 
         // Destroy the box if it's out of bounds
-        if (box->coords.y >= GRID_HEIGHT + CELL_SIZE * 2) {
+        if (box->coords.y >= MAIN_FIELD_END_Y + CELL_SIZE * 2) {
             this->flyingBoxes.erase(box);
         }
         else {
@@ -141,10 +142,13 @@ void Game::updateEnding(float deltaTime) {
         if (!cell.isFilled) continue;
 
         // Random speed and rotation
-        float rotationSpeed = GetRandomValue(20, 80) / 100.0f;
-        Vector2 speed = (Vector2){GetRandomValue(-5, 5), GetRandomValue(10, 50)};
+        float rotationSpeed = GetRandomValue(20, 80) / 10.0f;
+        Vector2 speed = (Vector2){(float)GetRandomValue(-100, 100), (float)GetRandomValue(-200, -50)};
 
-        this->flyingBoxes.push_back(FlyingBox(cell.food, x, y, speed, rotationSpeed));
+        int coordsX = MAIN_FIELD_START_X + x * CELL_SIZE;
+        int coordsY = MAIN_FIELD_START_Y + y * CELL_SIZE;
+
+        this->flyingBoxes.push_back(FlyingBox(cell.food, coordsX, coordsY, speed, rotationSpeed));
         cell.isFilled = false;
 
         this->nextFlyingBoxCoords = i + 1;
@@ -159,5 +163,11 @@ void Game::updateEnding(float deltaTime) {
     }
 
     // Randomize next time this happens
-    this->pieceFallTimer.reset(1.0f / GetRandomValue(3, 5));
+    // After a couple of boxes flying this should get faster
+    if (this->flyingBoxes.size() < 10) {
+        this->pieceFallTimer.reset(1.0f / GetRandomValue(5, 10));
+    }
+    else {
+        this->pieceFallTimer.reset(1.0f / GetRandomValue(30, 50));
+    }
 }

@@ -15,7 +15,7 @@ void drawSquareTextureRotation(Texture texture, Rectangle location, float rotati
 void drawSquareRotation(Rectangle location, float rotation, Color color) {
     location.x += location.width / 2;
     location.y += location.height / 2;
-    DrawRectanglePro(location, (Vector2){location.width / 2, location.height / 2}, rotation, WHITE);
+    DrawRectanglePro(location, (Vector2){location.width / 2, location.height / 2}, rotation, color);
 }
 
 void drawTextCentered(std::string text, int centerX, int centerY, int fontSize, Color color) {

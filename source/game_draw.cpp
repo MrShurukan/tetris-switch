@@ -139,4 +139,10 @@ void Game::drawPlaying() const {
 
 void Game::drawEnding() const {
     this->drawCommon();
+
+    for (const FlyingBox& box : this->flyingBoxes) {
+        box.draw();
+    }
+
+    DrawText(std::to_string(this->flyingBoxes.size()).c_str(), 10, HEIGHT - 100, 24, BLACK);
 }
