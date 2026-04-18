@@ -62,15 +62,10 @@ static std::string getLabelByFood(Food food) {
     return labelByFood[static_cast<size_t>(food)];
 }
 
-void drawCell(int x, int y, Food food) {
-    Color c = getBaseColorByFood(food);
-    DrawRectangle(MAIN_FIELD_START_X + x * CELL_SIZE, MAIN_FIELD_START_Y + y * CELL_SIZE, CELL_SIZE, CELL_SIZE, c);
-
-    // Make it darker
-    c.r *= 0.8;
-    c.g *= 0.8;
-    c.b *= 0.8;
-    drawTextCentered(getLabelByFood(food), MAIN_FIELD_START_X + x * CELL_SIZE + CELL_SIZE / 2, MAIN_FIELD_START_Y + y * CELL_SIZE + CELL_SIZE / 2, 24, c);
+void Game::drawCell(int x, int y, const Cell& cell) const {
+    drawSquareTextureRotationAtlas(this->tetraminos, 
+        (Rectangle){MAIN_FIELD_START_X + x * CELL_SIZE, MAIN_FIELD_START_Y + y * CELL_SIZE, CELL_SIZE, CELL_SIZE}, 
+        cell.textureX, cell.textureY, cell.rotation);
 }
 
 // Left up is svechka's box
@@ -120,7 +115,7 @@ void Game::drawCommon() const {
         for (int y = 0; y < GRID_HEIGHT; y++) {
             if (!grid[x][y].isFilled) continue;
 
-            drawCell(x, y, grid[x][y].food);
+            this->drawCell(x, y, grid[x][y]);
         }
     }
 }
@@ -129,7 +124,7 @@ void Game::drawPlaying() const {
     this->drawCommon();
 
     // Active piece
-    this->currentPiece.draw();
+    this->currentPiece.draw(this->tetraminos);
 
     // DEBUG
     // std::stringstream stream;
@@ -141,7 +136,7 @@ void Game::drawEnding() const {
     this->drawCommon();
 
     for (const FlyingBox& box : this->flyingBoxes) {
-        box.draw();
+        box.draw(this->tetraminos);
     }
 
     DrawText(std::to_string(this->flyingBoxes.size()).c_str(), 10, HEIGHT - 100, 24, BLACK);

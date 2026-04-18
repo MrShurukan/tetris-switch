@@ -6,12 +6,14 @@ static inline Food getRandomFood() {
 
 Game::Game() : currentPiece(getRandomFood()), pieceFallTimer(PIECE_FALL_TIMER_DEFAULT) {
     this->svechka = LoadTexture("romfs:/resources/svechka.png");
+    this->tetraminos = LoadTexture("romfs:/resources/tetramino.png");
 
     this->reset();
 }
 
 Game::~Game() {
     UnloadTexture(this->svechka);
+    UnloadTexture(this->tetraminos);
 }
 
 void Game::reset() {
@@ -148,7 +150,7 @@ void Game::updateEnding(float deltaTime) {
         int coordsX = MAIN_FIELD_START_X + x * CELL_SIZE;
         int coordsY = MAIN_FIELD_START_Y + y * CELL_SIZE;
 
-        this->flyingBoxes.push_back(FlyingBox(cell.food, coordsX, coordsY, speed, rotationSpeed));
+        this->flyingBoxes.push_back(FlyingBox(coordsX, coordsY, cell.textureX, cell.textureY, speed, rotationSpeed));
         cell.isFilled = false;
 
         this->nextFlyingBoxCoords = i + 1;

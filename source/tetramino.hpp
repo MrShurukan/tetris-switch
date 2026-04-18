@@ -8,7 +8,7 @@ public:
     // Create a Tetramino with a specified food type. Appears at coords GRID_WIDTH / 2, 0
     Tetramino(Food food);
     // Draw the tetramino on the base field
-    void draw() const;
+    void draw(Texture2D tetraminos) const;
     // Check if tetramino intersects anything in the grid
     bool intersectsGrid(const Cell grid[GRID_WIDTH][GRID_HEIGHT]) const;
 
@@ -28,4 +28,6 @@ private:
     Food food;
     // A list of actual boxes and their coordinates
     std::vector<Box> boxes;
+    // Current rotation
+    float rotation;
 };

@@ -76,16 +76,28 @@ enum class Food {
 };
 
 struct Cell {
+    Cell() {}
+    Cell(bool isFilled, float rotation, int textureX, int textureY)
+        : isFilled(isFilled), rotation(rotation), textureX(textureX), textureY(textureY) {}
+    
     bool isFilled;
-    Food food;
+    // Rotation of the image
+    float rotation;
+    // Location in the atlas (absolute coords)
+    int textureX;
+    int textureY;
 };
 
 // Tetramino box
 struct Box {
-    Box(int x, int y, bool isPivot) : coords(GenericVector<int>(x, y)), isPivot(isPivot) {}
+    Box(int x, int y, int textureX, int textureY, bool isPivot) 
+        : coords(GenericVector<int>(x, y)), isPivot(isPivot), textureX(textureX), textureY(textureY) {}
     GenericVector<int> coords;
     // Is origin of rotation for the piece
     bool isPivot;
+    // Location in the atlas (absolute coords)
+    int textureX;
+    int textureY;
 };
 
 Color getBaseColorByFood(Food food);
@@ -96,10 +108,12 @@ const Vector2 gravity {0.0f, 300.0f};
 // Flying tetramino box (game end)
 struct FlyingBox {
     FlyingBox() {}
-    FlyingBox(Food food, int x, int y, Vector2 initialSpeed, float rotationSpeed) 
-        : food(food), coords(Vector2{(float)x, (float)y}), speed(initialSpeed), rotation(0.0f), rotationSpeed(rotationSpeed) {}
+    FlyingBox(int x, int y, int textureX, int textureY, Vector2 initialSpeed, float rotationSpeed) 
+        : textureX(textureX), textureY(textureY), coords(Vector2{(float)x, (float)y}), speed(initialSpeed), rotation(0.0f), rotationSpeed(rotationSpeed) {}
 
-    Food food;
+    // Absolute coords in atlas for the block
+    int textureX;
+    int textureY;
 
     Vector2 coords;
     Vector2 speed;
@@ -117,8 +131,9 @@ struct FlyingBox {
         this->rotation += this->rotationSpeed * deltaTime;
     }
 
-    void draw() const {
-        drawSquareRotation((Rectangle){this->coords.x, this->coords.y, CELL_SIZE, CELL_SIZE}, this->rotation, getBaseColorByFood(this->food));
+    void draw(Texture2D tetraminos) const {
+        drawSquareTextureRotationAtlas(tetraminos, (Rectangle){this->coords.x, this->coords.y, CELL_SIZE, CELL_SIZE}, this->textureX, this->textureY, this->rotation);
+        // drawSquareRotation((Rectangle){this->coords.x, this->coords.y, CELL_SIZE, CELL_SIZE}, this->rotation, getBaseColorByFood(this->food));
         // DrawRectangle(this->coords.x, this->coords.y, CELL_SIZE, CELL_SIZE, getBaseColorByFood(this->food));
     }
 };

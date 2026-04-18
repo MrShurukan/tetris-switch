@@ -18,6 +18,7 @@ private:
     GameState state;
     Cell grid[GRID_WIDTH][GRID_HEIGHT];
     Texture2D svechka;
+    Texture2D tetraminos;
     // A lookup key for the next food template
     Food nextPieceFood;
     Tetramino currentPiece;
@@ -31,6 +32,7 @@ private:
     void drawPressStart() const;
     void drawPlaying() const;
     void drawEnding() const;
+    void drawCell(int x, int y, const Cell &cell) const;
     void drawCommon() const;
 
     void updatePlaying(float deltaTime);

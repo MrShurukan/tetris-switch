@@ -4,5 +4,6 @@
 
 void drawSquareTexture(Texture texture, Rectangle location);
 void drawSquareTextureRotation(Texture texture, Rectangle location, float rotation);
+void drawSquareTextureRotationAtlas(Texture texture, Rectangle location, int textureX, int textureY, float rotation);
 void drawSquareRotation(Rectangle location, float rotation, Color color);
 void drawTextCentered(std::string string, int centerX, int centerY, int fontSize, Color color);

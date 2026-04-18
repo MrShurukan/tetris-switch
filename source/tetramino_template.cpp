@@ -1,14 +1,14 @@
 #include "tetramino_template.hpp"
 
-TetraminoTemplate::TetraminoTemplate(int width, int height, Food type, std::array<bool, MAX_TETRAMINO_BOXES> boxes)
-    : TetraminoTemplate(width, height, type, boxes, GenericVector<int>(0, 0), false) {}
+TetraminoTemplate::TetraminoTemplate(int width, int height, Food type, std::array<bool, MAX_TETRAMINO_BOXES> boxes, int textureX, int textureY)
+    : TetraminoTemplate(width, height, type, boxes, GenericVector<int>(0, 0), false, textureX, textureY) {}
 
-TetraminoTemplate::TetraminoTemplate(int width, int height, Food type, std::array<bool, MAX_TETRAMINO_BOXES> boxes, GenericVector<int> pivotCoords)
-    : TetraminoTemplate(width, height, type, boxes, pivotCoords, true) {}
+TetraminoTemplate::TetraminoTemplate(int width, int height, Food type, std::array<bool, MAX_TETRAMINO_BOXES> boxes, GenericVector<int> pivotCoords, int textureX, int textureY)
+    : TetraminoTemplate(width, height, type, boxes, pivotCoords, true, textureX, textureY) {}
 
 // Full constructor
-TetraminoTemplate::TetraminoTemplate(int width, int height, Food type, std::array<bool, MAX_TETRAMINO_BOXES> boxes, GenericVector<int> pivotCoords, bool shouldRotate)
-    : width(width), height(height), type(type), pivotCoords(pivotCoords), shouldRotate(shouldRotate), boxes(boxes) 
+TetraminoTemplate::TetraminoTemplate(int width, int height, Food type, std::array<bool, MAX_TETRAMINO_BOXES> boxes, GenericVector<int> pivotCoords, bool shouldRotate, int textureX, int textureY)
+    : width(width), height(height), type(type), pivotCoords(pivotCoords), shouldRotate(shouldRotate), textureX(textureX), textureY(textureY), boxes(boxes)
 {
     assert(width > 0);
     assert(height > 0);
@@ -45,7 +45,8 @@ const TetraminoTemplate& getTemplateByFood(Food food) {
                 true,
                 true,
             }, 
-            GenericVector<int>(0, 2)
+            GenericVector<int>(0, 2),
+            0, 0
         ),
         // Reversed L
         TetraminoTemplate(2, 3, Food::Fish, 
@@ -54,7 +55,8 @@ const TetraminoTemplate& getTemplateByFood(Food food) {
                 false, true,
                 true,  true
             }, 
-            GenericVector<int>(1, 1)
+            GenericVector<int>(1, 1),
+            1, 0
         ),
         // L
         TetraminoTemplate(2, 3, Food::Sausages, 
@@ -62,15 +64,17 @@ const TetraminoTemplate& getTemplateByFood(Food food) {
                 true, false,
                 true, false,
                 true, true
-            }, 
-            GenericVector<int>(0, 1)
+            },
+            GenericVector<int>(0, 1),
+            3, 0
         ),
         // Box
         TetraminoTemplate(2, 2, Food::Shrimp, 
             std::array<bool, MAX_TETRAMINO_BOXES> {
                 true, true,
                 true, true
-            }
+            },
+            5, 0
         ),
         // Pipe _--
         TetraminoTemplate(3, 2, Food::Cheese, 
@@ -78,7 +82,8 @@ const TetraminoTemplate& getTemplateByFood(Food food) {
                 false, true,  true,
                 true,  true,  false
             },
-            GenericVector<int>(1, 1)
+            GenericVector<int>(1, 1),
+            7, 0
         ),
         // T
         TetraminoTemplate(3, 2, Food::Ryazhenka, 
@@ -86,7 +91,8 @@ const TetraminoTemplate& getTemplateByFood(Food food) {
                 true,  true, true,
                 false, true, false,
             },
-            GenericVector<int>(1, 0)
+            GenericVector<int>(1, 0),
+            10, 0
         ),
         // Pipe --_
         TetraminoTemplate(3, 2, Food::Steak, 
@@ -94,13 +100,15 @@ const TetraminoTemplate& getTemplateByFood(Food food) {
                 true,  true,  false,
                 false, true,  true,
             },
-            GenericVector<int>(1, 1)
+            GenericVector<int>(1, 1),
+            13, 0
         ),
         // Single Cell
         TetraminoTemplate(1, 1, Food::DryFood, 
             std::array<bool, MAX_TETRAMINO_BOXES> {
                 true,
-            }
+            },
+            16, 0
         ),
     };
 

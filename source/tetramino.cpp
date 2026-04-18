@@ -10,14 +10,18 @@ Tetramino::Tetramino(Food food) : food(food) {
             if (!templ.hasBoxAt(x, y)) continue;
 
             bool isPivot = templ.pivotCoords.x == x && templ.pivotCoords.y == y;
-            boxes.push_back(Box(xOffset + x, y, isPivot));
+            int textureX = (templ.textureX + x) * CELL_SIZE;
+            int textureY = (templ.textureY + y) * CELL_SIZE;
+            boxes.push_back(Box(xOffset + x, y, textureX, textureY, isPivot));
         }
     }
 }
 
-void Tetramino::draw() const {
+void Tetramino::draw(Texture2D tetraminos) const {
     for (auto& box : this->boxes) {
-        drawCell(box.coords.x, box.coords.y, this->food);
+        drawSquareTextureRotationAtlas(tetraminos, 
+            (Rectangle){MAIN_FIELD_START_X + box.coords.x * CELL_SIZE, MAIN_FIELD_START_Y + box.coords.y * CELL_SIZE, CELL_SIZE, CELL_SIZE}, 
+            box.textureX, box.textureY, this->rotation);
     }
 }
 
@@ -33,19 +37,21 @@ bool Tetramino::intersectsGrid(const Cell grid[GRID_WIDTH][GRID_HEIGHT]) const {
 }
 
 void Tetramino::placeInGrid(Cell grid[GRID_WIDTH][GRID_HEIGHT]) const {
-    for (auto& box : this->boxes) {
+    for (const Box& box : this->boxes) {
         assert(box.coords.x >= 0 && box.coords.x < GRID_WIDTH);
         assert(box.coords.y >= 0 && box.coords.y < GRID_HEIGHT);
 
         grid[box.coords.x][box.coords.y].isFilled = true;
-        grid[box.coords.x][box.coords.y].food = this->food;
+        grid[box.coords.x][box.coords.y].textureX = box.textureX;
+        grid[box.coords.x][box.coords.y].textureY = box.textureY;
+        grid[box.coords.x][box.coords.y].rotation = this->rotation;
     }
 };
 
 bool Tetramino::tryMoveDown(const Cell grid[GRID_WIDTH][GRID_HEIGHT]) {
     auto boxesClone = std::vector<Box>(this->boxes);
 
-    for (auto& box : boxesClone) {
+    for (Box& box : boxesClone) {
         box.coords.y += 1;
         if (box.coords.y >= GRID_HEIGHT || grid[box.coords.x][box.coords.y].isFilled) return false;
     }
@@ -106,5 +112,6 @@ bool Tetramino::tryRotateClockwise(const Cell grid[GRID_WIDTH][GRID_HEIGHT]) {
     }
 
     this->boxes = boxesClone;
+    this->rotation += 90.0f;
     return true;
 }
