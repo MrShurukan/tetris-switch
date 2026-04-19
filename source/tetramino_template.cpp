@@ -74,7 +74,7 @@ const TetraminoTemplate& getTemplateByFood(Food food) {
                 true, true,
                 true, true
             },
-            5, 0
+            4, 0
         ),
         // Pipe _--
         TetraminoTemplate(3, 2, Food::Cheese, 
@@ -83,7 +83,7 @@ const TetraminoTemplate& getTemplateByFood(Food food) {
                 true,  true,  false
             },
             GenericVector<int>(1, 1),
-            7, 0
+            5, 1
         ),
         // T
         TetraminoTemplate(3, 2, Food::Ryazhenka, 
@@ -92,7 +92,7 @@ const TetraminoTemplate& getTemplateByFood(Food food) {
                 false, true, false,
             },
             GenericVector<int>(1, 0),
-            10, 0
+            7, 0
         ),
         // Pipe --_
         TetraminoTemplate(3, 2, Food::Steak, 
@@ -101,14 +101,14 @@ const TetraminoTemplate& getTemplateByFood(Food food) {
                 false, true,  true,
             },
             GenericVector<int>(1, 1),
-            13, 0
+            10, 0
         ),
         // Single Cell
         TetraminoTemplate(1, 1, Food::DryFood, 
             std::array<bool, MAX_TETRAMINO_BOXES> {
                 true,
             },
-            16, 0
+            12, 0
         ),
     };
 

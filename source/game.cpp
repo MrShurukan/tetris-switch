@@ -6,7 +6,7 @@ static inline Food getRandomFood() {
 
 Game::Game() : currentPiece(getRandomFood()), pieceFallTimer(PIECE_FALL_TIMER_DEFAULT) {
     this->svechka = LoadTexture("romfs:/resources/svechka.png");
-    this->tetraminos = LoadTexture("romfs:/resources/tetramino.png");
+    this->tetraminos = LoadTexture("romfs:/resources/tetraminos.png");
 
     this->reset();
 }
